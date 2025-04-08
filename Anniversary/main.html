@@ -1,0 +1,2163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Years of Us</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.4/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #f8b6c6;
+            --secondary-color: #e8e8e8;
+            --accent-color: #ff758f;
+            --text-color: #333;
+            --dark-accent: #d64161;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Dancing+Script:wght@600&display=swap');
+        
+        body {
+            background-color: #fff;
+            color: var(--text-color);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            z-index: 2;
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
+            max-width: 800px;
+            width: 90%;
+            margin: 0 auto;
+            transition: all 0.5s ease;
+        }
+        
+        .header-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--dark-accent);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
+        .counter-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2.5rem;
+            margin: 4rem 0;
+            perspective: 1200px;
+            position: relative;
+        }
+        
+        .counter-container::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            right: -30px;
+            bottom: -30px;
+            border-radius: 30px;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        
+        .counter-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-accent);
+            padding: 2.5rem;
+            border-radius: 24px;
+            text-align: center;
+            min-width: 180px;
+            box-shadow: 0 15px 35px rgba(214, 65, 97, 0.2);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(5deg);
+        }
+        
+        .counter-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(248, 182, 198, 0.4) 0%, rgba(255, 117, 143, 0.4) 100%);
+            z-index: -1;
+            border-radius: 22px;
+            opacity: 0.7;
+        }
+        
+        .counter-box::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: scale(0.8);
+        }
+        
+        .counter-box:hover {
+            transform: perspective(1000px) translateY(-15px) rotateX(10deg) rotateY(5deg) scale(1.05);
+            box-shadow: 0 25px 50px rgba(214, 65, 97, 0.35);
+            border-color: rgba(255, 255, 255, 0.5);
+            z-index: 1;
+        }
+        
+        .counter-box:hover::after {
+            opacity: 0.8;
+            transform: scale(1);
+        }
+        
+        .counter-value {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            position: relative;
+            text-shadow: 3px 3px 6px rgba(214, 65, 97, 0.4);
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(to bottom, #ff6b95, #ff9eb5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .counter-value::before {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 149, 0.6), transparent);
+            border-radius: 2px;
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+            transform-origin: left;
+        }
+        
+        .counter-box:hover .counter-value::before {
+            transform: scaleX(1);
+        }
+        
+        .counter-box:hover .counter-value {
+            transform: translateY(-5px);
+            text-shadow: 4px 4px 8px rgba(214, 65, 97, 0.6);
+        }
+        
+        .counter-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 0.8rem;
+            color: var(--dark-accent);
+            opacity: 0.85;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .counter-box:hover .counter-label {
+            opacity: 1;
+            letter-spacing: 3px;
+        }
+        
+        .counter-separator {
+            font-size: 3rem;
+            color: rgba(214, 65, 97, 0.7);
+            margin: 0 -1rem;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 10px rgba(214, 65, 97, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulseOpacity 1.5s infinite;
+        }
+        
+        @keyframes pulseOpacity {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        .counter-digit-container {
+            position: relative;
+            height: 4.5rem;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .flip-animation {
+            animation: flipNumber 0.3s ease-in-out;
+        }
+        
+        @keyframes flipNumber {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-10px);
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .sparkle {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10;
+            animation: sparkleAnim 1s ease-in-out forwards;
+        }
+        
+        @keyframes sparkleAnim {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1) rotate(180deg);
+                opacity: 1;
+                box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8), 
+                            0 0 20px 5px rgba(255, 182, 193, 0.5);
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .gallery-section {
+            padding: 5rem 0;
+            background-color: #fafafa;
+            position: relative;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: var(--dark-accent);
+        }
+        
+        .slideshow-container {
+            position: relative;
+            max-width: 800px;
+            height: 500px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(214, 65, 97, 0.3);
+        }
+        
+        .slideshow-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .slideshow-slide.active {
+            opacity: 1;
+        }
+        
+        .slideshow-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .slideshow-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+            color: white;
+            padding: 2rem;
+        }
+        
+        .slideshow-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .slideshow-desc {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .slideshow-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        .slideshow-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(214, 65, 97, 0.3);
+            margin: 0 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .slideshow-dot.active {
+            background-color: var(--dark-accent);
+            transform: scale(1.3);
+        }
+        
+        .slideshow-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--dark-accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .slideshow-arrow:hover {
+            background-color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slideshow-arrow.prev {
+            left: 20px;
+        }
+        
+        .slideshow-arrow.next {
+            right: 20px;
+        }
+        
+        .gallery-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message-section {
+            padding: 5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .message-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .message-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        
+        .heart-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .interactive-section {
+            padding: 5rem 2rem;
+            background-color: #f5f5f5;
+        }
+        
+        .interactive-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #constellation-canvas {
+            width: 100%;
+            height: 500px;
+            background-color: #111;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+        
+        .love-letter {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .love-letter:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-width: 0 30px 30px 0;
+            border-style: solid;
+            border-color: #f5f5f5 var(--accent-color);
+        }
+        
+        .letter-content {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+        
+        footer {
+            padding: 3rem 0;
+            text-align: center;
+            background-color: var(--dark-accent);
+            color: white;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .footer-text {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .heart-button {
+            display: inline-block;
+            background-color: white;
+            color: var(--dark-accent);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .heart-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .heart-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        
+        .floating-heart {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            animation: floatUp 4s ease-in-out forwards;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .counter-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .gallery-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .message-container {
+                padding: 2rem;
+            }
+            
+            .letter-content {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* Special effect classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Loader styles */
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .loader {
+            width: 100px;
+            height: 100px;
+            border: 5px solid var(--primary-color);
+            border-radius: 50%;
+            border-top-color: var(--dark-accent);
+            animation: spin 1s infinite linear;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        /* Music player styles */
+        .music-player {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            background-color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .music-player:hover {
+            transform: scale(1.1);
+        }
+        
+        .music-icon {
+            font-size: 1.5rem;
+            color: var(--dark-accent);
+        }
+
+        /* Digital Love Letter Reveal Styles */
+        .envelope-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(135deg, #ff9eb5, #ff758f);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(214, 65, 97, 0.3);
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
+            margin-bottom: 2rem;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: #ff758f;
+            border-radius: 16px 16px 0 0;
+            transform-origin: top;
+            transition: transform 1s ease;
+            z-index: 2;
+            border-bottom: 2px dashed white;
+            overflow: hidden;
+        }
+
+        .envelope-flap::after {
+            content: '';
+            position: absolute;
+            width: 110%;
+            height: 55%;
+            bottom: -2px;
+            left: -5%;
+            background: linear-gradient(135deg, #ff9eb5, #ff758f);
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.1) inset;
+        }
+
+        .envelope-content {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            overflow: hidden;
+            transform: translateZ(1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.5s ease 0.5s, transform 0.5s ease;
+            transform: translateY(20px);
+        }
+
+        .envelope-seal {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: #d64161;
+            border-radius: 50%;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+
+        .envelope-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 1rem;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .envelope-open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-open .envelope-seal {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        .envelope-open .envelope-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .envelope-open .envelope-hint {
+            opacity: 0;
+        }
+
+        .letter-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: var(--dark-accent);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .letter-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Fix for love letter - make it visible by default if JavaScript fails */
+        .envelope.envelope-open .letter-text {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .letter-line {
+            margin-bottom: 1.2rem;
+            position: relative;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .letter-highlight {
+            position: relative;
+            color: #d64161;
+            font-weight: bold;
+        }
+
+        .letter-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(214, 65, 97, 0.2);
+            border-radius: 2px;
+            z-index: -1;
+        }
+
+        .letter-signature {
+            text-align: right;
+            margin-top: 2rem;
+            font-size: 2rem;
+        }
+
+        .flying-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .heart-particle {
+            position: absolute;
+            font-size: 1rem;
+            animation: floatAround 4s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes floatAround {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) rotate(var(--r));
+                opacity: 0;
+            }
+        }
+
+        .typing-effect::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Word Cloud Styles */
+        .word-cloud-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #fff5f7, #fff);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .word-cloud-container {
+            max-width: 900px;
+            height: 500px;
+            margin: 0 auto;
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(214, 65, 97, 0.2);
+            overflow: hidden;
+        }
+        
+        /* Pulse animation for instructions to make it more obvious */
+        .word-instructions {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.7; }
+        }
+
+        #word-cloud {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .word-details {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+            border-top: 1px solid rgba(214, 65, 97, 0.2);
+        }
+
+        .word-details.visible {
+            transform: translateY(0);
+        }
+
+        .word-details-title {
+            font-size: 1.5rem;
+            color: var(--dark-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .word-details-text {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .word-instructions {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--dark-accent);
+            font-style: italic;
+        }
+
+        .cloud-word {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cloud-word:hover {
+            filter: drop-shadow(0 0 5px rgba(214, 65, 97, 0.8));
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader-wrapper">
+        <div class="loader"></div>
+    </div>
+    
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Heart Animation Container -->
+    <div class="heart-container"></div>
+    
+    <!-- Header Section -->
+    <header>
+        <div class="header-content fade-in">
+            <h1>Two Years of Love</h1>
+            <p class="subtitle">Celebrating every moment since April 9, 2023</p>
+            
+            <div style="text-align: center; margin: 3rem 0;">
+                <div style="display: inline-flex; align-items: center; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(12px); padding: 1.5rem 2.5rem; border-radius: 50px; box-shadow: 0 15px 35px rgba(214, 65, 97, 0.25); border: 1px solid rgba(255, 255, 255, 0.2); white-space: nowrap;">
+                    <div style="display: flex; flex-direction: column; align-items: center; padding: 0 1.2rem; min-width: 70px;">
+                        <div class="counter-value" style="font-size: 3.5rem;" id="years">2</div>
+                        <div class="counter-label" style="font-size: 1.1rem; margin-top: 0.5rem;">Years</div>
+                    </div>
+                    <div class="counter-separator" style="margin: 0 0.5rem; font-size: 2.8rem;">:</div>
+                    <div style="display: flex; flex-direction: column; align-items: center; padding: 0 1.2rem; min-width: 70px;">
+                        <div class="counter-value" style="font-size: 3.5rem;" id="days">0</div>
+                        <div class="counter-label" style="font-size: 1.1rem; margin-top: 0.5rem;">Days</div>
+                    </div>
+                    <div class="counter-separator" style="margin: 0 0.5rem; font-size: 2.8rem;">:</div>
+                    <div style="display: flex; flex-direction: column; align-items: center; padding: 0 1.2rem; min-width: 70px;">
+                        <div class="counter-value" style="font-size: 3.5rem;" id="hours">0</div>
+                        <div class="counter-label" style="font-size: 1.1rem; margin-top: 0.5rem;">Hours</div>
+                    </div>
+                    <div class="counter-separator" style="margin: 0 0.5rem; font-size: 2.8rem;">:</div>
+                    <div style="display: flex; flex-direction: column; align-items: center; padding: 0 1.2rem; min-width: 70px;">
+                        <div class="counter-value" style="font-size: 3.5rem;" id="minutes">0</div>
+                        <div class="counter-label" style="font-size: 1.1rem; margin-top: 0.5rem;">Minutes</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="total-counter fade-in">
+                <h3>We've spent approximately <span id="total-hours">17,533</span> hours together</h3>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Gallery Section with Slideshow -->
+    <section class="gallery-section">
+        <h2 class="section-title fade-in">Our Journey</h2>
+        <div class="slideshow-container fade-in">
+            <!-- Image placeholders - replace with your actual images -->
+            <div class="slideshow-slide active">
+                <img src="Photos/Photo_0.jpg" alt="Us together" onload="adjustSlideHeight(this)">
+            </div>
+            
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_1.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_2.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_3.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_4.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_5.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_6.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_7.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_8.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_9.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_10.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_11.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_12.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_13.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_14.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_15.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_16.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_17.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_18.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_19.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_20.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_21.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_22.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_23.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_24.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_25.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_26.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_27.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_28.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_29.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_30.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_31.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_32.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_33.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_34.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_35.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_36.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_37.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_38.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_39.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_40.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_41.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_42.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_43.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_44.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_45.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_46.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+            <div class="slideshow-slide">
+                <img src="Photos/Photo_47.jpg" alt="Special moment" onload="adjustSlideHeight(this)">
+            </div>
+        </div>
+        <div class="slideshow-nav">
+            <div class="slideshow-dot active"></div>
+           <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+            <div class="slideshow-dot"></div>
+        </div>
+        <div class="slideshow-arrow prev">❮</div>
+        <div class="slideshow-arrow next">❯</div>
+    </section>
+
+    <script>
+        function adjustSlideHeight(img) {
+            const slide = img.closest('.slideshow-slide');
+            const container = document.querySelector('.slideshow-container');
+            
+            if (slide && container) {
+                // Set the height of the slideshow container to match the image height
+                container.style.height = img.naturalHeight + 'px';
+            }
+        }
+    </script>
+    
+    <!-- Word Cloud Section -->
+    <section class="word-cloud-section">
+        <h2 class="section-title fade-in">Our Story in Words</h2>
+        <div class="word-cloud-container fade-in">
+            <div id="word-cloud"></div>
+            <div class="word-details">
+                <h3 class="word-details-title">Love</h3>
+                <p class="word-details-text">The foundation of our relationship. From the first "I love you" to every day since, this feeling has only grown stronger.</p>
+            </div>
+        </div>
+        <p class="word-instructions">Click on a word to reveal a special memory</p>
+    </section>
+    
+    <!-- Interactive Constellation Section -->
+    <section class="interactive-section">
+        <h2 class="section-title fade-in">Our Constellation</h2>
+        <div class="interactive-container fade-in">
+            <canvas id="constellation-canvas"></canvas>
+            <p>Click to add stars to our universe. Each star represents a wish for our future.</p>
+        </div>
+    </section>
+    
+    <!-- Love Letter Section with Digital Reveal -->
+    <section class="message-section">
+        <div class="message-container fade-in">
+            <div class="envelope-container" id="envelope">
+                <div class="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-seal">❤️</div>
+                    <div class="envelope-hint">Click to open</div>
+                    <div class="envelope-content">
+                        <div class="flying-hearts"></div>
+                        <div class="letter-text">
+                            <span class="letter-line">My dear,</span><br><br>
+                            <span class="letter-line">Two years of <span class="letter-highlight">laughter</span>, <span class="letter-highlight">growth</span>, and <span class="letter-highlight">love</span>.</span><br>
+                            <span class="letter-line">Two years of building <span class="letter-highlight">memories</span> that I'll cherish forever.</span><br>
+                            <span class="letter-line">Thank you for making every moment <span class="letter-highlight">special</span>,</span><br>
+                            <span class="letter-line">for being my <span class="letter-highlight">partner</span>, my <span class="letter-highlight">best friend</span>, and my <span class="letter-highlight">favorite person</span>.</span><br>
+                            <span class="letter-line">Here's to many more years together,</span><br>
+                            <span class="letter-line">filled with <span class="letter-highlight">adventure</span> and <span class="letter-highlight">love</span>.</span><br><br>
+                            <span class="letter-line letter-signature">Forever yours</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="heart-animation"></div>
+    </section>
+        <!-- Love Letter Section -->
+        <section class="message-section">
+            <h2 class="section-title fade-in">A Note For You</h2>
+            <div class="message-container fade-in">
+                  <div class="love-letter">
+                       <div class="letter-content">
+                            <p>Baby,</p>
+                            <p>Two years have flown by, filled with laughter, growth, and an abundance of love. Every moment spent with you is a treasure I hold close to my heart.</p>
+                            <p>Thank you for being my rock, my confidante, and the sunshine in my days. Here's to countless more years of adventures, shared dreams, and unwavering love.</p>
+                            <p style="text-align: right;">Bobo</p>
+                       </div>
+                  </div>
+            </div>
+       </section>
+      
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p class="footer-text">Two years down, forever to go</p>
+            <button class="heart-button" id="heart-button">Send Love ❤️</button>
+        </div>
+    </footer>
+    
+    <!-- Music Player -->
+    <div class="music-player" id="music-player">
+        <div class="music-icon">♫</div>
+    </div>
+    
+    <script>
+        // Loader
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.querySelector('.loader-wrapper').classList.add('hidden');
+            }, 1500);
+        });
+        
+        // Fade in elements on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            function checkFade() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', checkFade);
+            checkFade(); // Check on initial load
+            
+            // Particles background
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: '#f8b6c6'
+                    },
+                    shape: {
+                        type: 'circle'
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: true
+                    },
+                    size: {
+                        value: 3,
+                        random: true
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#ff758f',
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: 'none',
+                        random: true,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'grab'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 0.5
+                            }
+                        },
+                        push: {
+                            particles_nb: 4
+                        }
+                    }
+                }
+            });
+            
+            // Enhanced Timer and counter logic
+            function updateCounters() {
+                const startDate = new Date('April 9, 2023 00:00:00');
+                const anniversaryDate = new Date('April 9, 2025 00:00:00');
+                const now = new Date();
+                
+                // Calculate time together
+                const diff = now - startDate;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const years = Math.floor(days / 365);
+                const remainingDays = days % 365;
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                // Animate counter update with flip effect
+                animateCounterUpdate('years', years);
+                animateCounterUpdate('days', remainingDays);
+                animateCounterUpdate('hours', hours);
+                animateCounterUpdate('minutes', minutes);
+                
+                // Calculate total hours together (approximate)
+                // Assuming you spend around 8 hours a day together on average
+                const totalHours = 17533;
+                
+                // Animate total hours counter
+                const totalHoursElement = document.getElementById('total-hours');
+                const currentValue = parseInt(totalHoursElement.getAttribute('data-value') || '0');
+                const newValue = totalHours;
+                
+                if (currentValue !== newValue) {
+                    animateNumberCount(totalHoursElement, currentValue, newValue);
+                    totalHoursElement.setAttribute('data-value', newValue.toString());
+                }
+                
+                // Add sparkle effect to counters occasionally
+                if (seconds % 10 === 0) {
+                    addSparkleToCounters();
+                }
+                
+                // Check if it's anniversary day
+                const isAnniversaryDay = now.getDate() === anniversaryDate.getDate() && 
+                                        now.getMonth() === anniversaryDate.getMonth();
+                
+                if (isAnniversaryDay) {
+                    document.body.classList.add('anniversary-mode');
+                    celebrateAnniversary();
+                }
+            }
+            
+            function animateCounterUpdate(elementId, newValue) {
+                const element = document.getElementById(elementId);
+                const currentValue = parseInt(element.getAttribute('data-value') || element.textContent);
+                
+                if (currentValue !== newValue) {
+                    // Add animation class
+                    element.classList.add('flip-animation');
+                    
+                    // After half of the animation, update the value
+                    setTimeout(() => {
+                        element.textContent = newValue;
+                        element.setAttribute('data-value', newValue);
+                    }, 150);
+                    
+                    // Remove animation class after animation completes
+                    setTimeout(() => {
+                        element.classList.remove('flip-animation');
+                    }, 300);
+                }
+            }
+            
+            function animateNumberCount(element, start, end) {
+                const duration = 1000; // 1 second animation
+                const frameDuration = 1000 / 60; // 60fps
+                const totalFrames = Math.round(duration / frameDuration);
+                const increment = (end - start) / totalFrames;
+                
+                let currentFrame = 0;
+                let currentValue = start;
+                
+                const animate = () => {
+                    currentFrame++;
+                    currentValue += increment;
+                    
+                    if (currentFrame === totalFrames) {
+                        element.textContent = end.toLocaleString();
+                    } else {
+                        element.textContent = Math.floor(currentValue).toLocaleString();
+                        requestAnimationFrame(animate);
+                    }
+                };
+                
+                animate();
+            }
+            
+            function addSparkleToCounters() {
+                const counters = document.querySelectorAll('.counter-box');
+                
+                counters.forEach(counter => {
+                    // Create sparkle elements
+                    for (let i = 0; i < 5; i++) {
+                        const sparkle = document.createElement('div');
+                        sparkle.classList.add('sparkle');
+                        
+                        // Random position within the counter
+                        sparkle.style.left = `${Math.random() * 100}%`;
+                        sparkle.style.top = `${Math.random() * 100}%`;
+                        
+                        // Random size
+                        const size = 3 + Math.random() * 7;
+                        sparkle.style.width = `${size}px`;
+                        sparkle.style.height = `${size}px`;
+                        
+                        // Random animation duration
+                        sparkle.style.animationDuration = `${0.5 + Math.random() * 1}s`;
+                        
+                        counter.appendChild(sparkle);
+                        
+                        // Remove after animation
+                        setTimeout(() => {
+                            sparkle.remove();
+                        }, 2000);
+                    }
+                });
+            }
+            
+            // Initial update
+            updateCounters();
+            
+            // Update every minute
+            setInterval(updateCounters, 60000);
+            
+            // Enhanced Constellation canvas
+            const canvas = document.getElementById('constellation-canvas');
+            const ctx = canvas.getContext('2d');
+            let stars = [];
+            let connections = [];
+            let mouse = { x: 0, y: 0, radius: 150 };
+            
+            function resizeCanvas() {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+                initStars();
+            }
+            
+            function initStars() {
+                stars = [];
+                const numStars = 70;
+                
+                // Create a more balanced distribution of stars
+                const gridSize = Math.sqrt(numStars);
+                const cellWidth = canvas.width / gridSize;
+                const cellHeight = canvas.height / gridSize;
+                
+                for (let i = 0; i < gridSize; i++) {
+                    for (let j = 0; j < gridSize; j++) {
+                        const x = cellWidth * i + Math.random() * cellWidth;
+                        const y = cellHeight * j + Math.random() * cellHeight;
+                        
+                        stars.push({
+                            x: x,
+                            y: y,
+                            radius: Math.random() * 2 + 1,
+                            originalRadius: Math.random() * 2 + 1,
+                            alpha: Math.random() * 0.5 + 0.5,
+                            originAlpha: Math.random() * 0.5 + 0.5,
+                            color: getStarColor(),
+                            vx: (Math.random() - 0.5) * 0.3,
+                            vy: (Math.random() - 0.5) * 0.3,
+                            speed: Math.random() * 0.2,
+                            angle: Math.random() * Math.PI * 2,
+                            angleSpeed: (Math.random() - 0.5) * 0.002,
+                            pulse: 0,
+                            pulseSpeed: Math.random() * 0.01 + 0.005
+                        });
+                    }
+                }
+                
+                // Heart-shaped constellation in the center (special stars)
+                const heartStars = createHeartShape(canvas.width / 2, canvas.height / 2, 120);
+                stars = stars.concat(heartStars);
+            }
+            
+            function getStarColor() {
+                // Soft pastel colors with pinkish/purplish tint
+                const colors = [
+                    '#ffe6e6', // soft pink
+                    '#ffccd5', // light pink
+                    '#fbf8cc', // soft yellow
+                    '#e4c1f9', // light purple
+                    '#d4f1f9', // light blue
+                    '#ffffff'  // white
+                ];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            function createHeartShape(centerX, centerY, size) {
+                const heartStars = [];
+                const numPoints = 15; // Number of points to create the heart shape
+                
+                for (let i = 0; i < numPoints; i++) {
+                    // Parametric heart equation
+                    const t = (i / numPoints) * 2 * Math.PI;
+                    const x = centerX + size * 16 * Math.pow(Math.sin(t), 3);
+                    const y = centerY - size * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                    
+                    heartStars.push({
+                        x: x,
+                        y: y,
+                        radius: 2.5,
+                        originalRadius: 2.5,
+                        alpha: 0.9,
+                        originAlpha: 0.9,
+                        color: '#ff758f', // Heart stars are pink
+                        vx: 0,
+                        vy: 0,
+                        speed: 0.05,
+                        angle: Math.random() * Math.PI * 2,
+                        angleSpeed: 0.005,
+                        pulse: Math.random() * Math.PI * 2,
+                        pulseSpeed: 0.03,
+                        isHeartStar: true
+                    });
+                }
+                
+                return heartStars;
+            }
+            
+            function drawStars() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Background gradient
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, '#0a0a1a');
+                gradient.addColorStop(1, '#1a1a2e');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Update star positions
+                stars.forEach(star => {
+                    // Pulse effect for radius
+                    star.pulse += star.pulseSpeed;
+                    const pulseFactor = Math.sin(star.pulse) * 0.5 + 0.5;
+                    
+                    // Calculate distance from mouse
+                    const dx = mouse.x - star.x;
+                    const dy = mouse.y - star.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Apply effects based on mouse proximity
+                    if (distance < mouse.radius) {
+                        const force = (mouse.radius - distance) / mouse.radius;
+                        star.radius = star.originalRadius * (1 + force);
+                        star.alpha = Math.min(1, star.originAlpha + force * 0.5);
+                        
+                        // Move away from mouse slightly
+                        if (!star.isHeartStar) {
+                            star.x += dx * 0.01 * force;
+                            star.y += dy * 0.01 * force;
+                        }
+                    } else {
+                        star.radius = star.originalRadius * (1 + pulseFactor * 0.3);
+                        star.alpha = star.originAlpha;
+                    }
+                    
+                    // Special movement for heart stars
+                    if (star.isHeartStar) {
+                        const heartPulse = 1 + Math.sin(Date.now() * 0.001) * 0.1;
+                        star.x += Math.cos(star.angle) * star.speed * heartPulse;
+                        star.y += Math.sin(star.angle) * star.speed * heartPulse;
+                        star.angle += star.angleSpeed;
+                        
+                        // Keep heart stars in formation
+                        const homeX = star.x;
+                        const homeY = star.y;
+                        star.x = star.x * 0.99 + homeX * 0.01;
+                        star.y = star.y * 0.99 + homeY * 0.01;
+                    } else {
+                        // Regular stars movement
+                        star.x += star.vx;
+                        star.y += star.vy;
+                        
+                        // Boundary check
+                        if (star.x < 0) star.x = canvas.width;
+                        if (star.x > canvas.width) star.x = 0;
+                        if (star.y < 0) star.y = canvas.height;
+                        if (star.y > canvas.height) star.y = 0;
+                    }
+                    
+                    // Draw star
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                    
+                    // Star glow effect
+                    const gradient = ctx.createRadialGradient(
+                        star.x, star.y, 0,
+                        star.x, star.y, star.radius * 2
+                    );
+                    gradient.addColorStop(0, star.color);
+                    gradient.addColorStop(1, 'transparent');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.globalAlpha = star.alpha;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                });
+                
+                // Connect nearby stars
+                connectStars();
+                
+                requestAnimationFrame(drawStars);
+            }
+            
+            function connectStars() {
+                // Find and draw connections between stars
+                for (let i = 0; i < stars.length; i++) {
+                    for (let j = i + 1; j < stars.length; j++) {
+                        const dx = stars[i].x - stars[j].x;
+                        const dy = stars[i].y - stars[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // Connect if close enough
+                        if (distance < 100) {
+                            // Calculate opacity based on distance
+                            const opacity = 1 - (distance / 100);
+                            
+                            // Default connection color
+                            let strokeColor = `rgba(255, 255, 255, ${opacity * 0.2})`;
+                            
+                            // Special connection for heart stars
+                            if (stars[i].isHeartStar && stars[j].isHeartStar) {
+                                const heartOpacity = opacity * 0.6;
+                                strokeColor = `rgba(255, 117, 143, ${heartOpacity})`;
+                                ctx.lineWidth = 1.5;
+                            } else if (stars[i].isHeartStar || stars[j].isHeartStar) {
+                                const specialOpacity = opacity * 0.4;
+                                strokeColor = `rgba(255, 182, 193, ${specialOpacity})`;
+                                ctx.lineWidth = 1;
+                            } else {
+                                ctx.lineWidth = 0.5;
+                            }
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(stars[i].x, stars[i].y);
+                            ctx.lineTo(stars[j].x, stars[j].y);
+                            ctx.strokeStyle = strokeColor;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            // Track mouse movement
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+            });
+            
+            // Add stars and magical effect on click
+            canvas.addEventListener('click', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Add cluster of stars
+                for (let i = 0; i < 5; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * 30;
+                    
+                    stars.push({
+                        x: x + Math.cos(angle) * distance,
+                        y: y + Math.sin(angle) * distance,
+                        radius: Math.random() * 3 + 2,
+                        originalRadius: Math.random() * 3 + 2,
+                        alpha: 1,
+                        originAlpha: 1,
+                        color: getStarColor(),
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        speed: Math.random() * 0.05,
+                        angle: Math.random() * Math.PI * 2,
+                        angleSpeed: (Math.random() - 0.5) * 0.002,
+                        pulse: Math.random() * Math.PI * 2,
+                        pulseSpeed: Math.random() * 0.02 + 0.01
+                    });
+                }
+                
+                // Create magical burst effect
+                createStarBurst(x, y);
+            });
+            
+            function createStarBurst(x, y) {
+                // Create radial gradient for the burst
+                ctx.beginPath();
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, 100);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(0.2, 'rgba(255, 182, 193, 0.4)');
+                gradient.addColorStop(1, 'rgba(255, 182, 193, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.arc(x, y, 100, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Create floating particles
+                for (let i = 0; i < 20; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 1 + Math.random() * 3;
+                    
+                    const particle = {
+                        x: x,
+                        y: y,
+                        size: Math.random() * 5 + 2,
+                        color: i % 3 === 0 ? '#ff758f' : '#ffc7d0',
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        life: 100,
+                        maxLife: 100,
+                        rotation: Math.random() * Math.PI * 2,
+                        rotationSpeed: (Math.random() - 0.5) * 0.2
+                    };
+                    
+                    animateParticle(particle);
+                }
+            }
+            
+            function animateParticle(particle) {
+                if (particle.life <= 0) return;
+                
+                // Draw heart or star shape instead of circle
+                ctx.save();
+                ctx.translate(particle.x, particle.y);
+                ctx.rotate(particle.rotation);
+                
+                const lifeRatio = particle.life / particle.maxLife;
+                const size = particle.size * lifeRatio;
+                
+                // Draw heart or star
+                if (Math.random() > 0.5) {
+                    // Heart
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.moveTo(0, -size/2);
+                    ctx.bezierCurveTo(size/2, -size, size, -size/2, 0, size);
+                    ctx.bezierCurveTo(-size, -size/2, -size/2, -size, 0, -size/2);
+                    ctx.fill();
+                } else {
+                    // Star
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    for (let i = 0; i < 5; i++) {
+                        const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
+                        const x1 = Math.cos(angle) * size;
+                        const y1 = Math.sin(angle) * size;
+                        ctx.lineTo(x1, y1);
+                        
+                        const innerAngle = angle + Math.PI / 5;
+                        const x2 = Math.cos(innerAngle) * (size/2);
+                        const y2 = Math.sin(innerAngle) * (size/2);
+                        ctx.lineTo(x2, y2);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+                
+                // Update position
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vy += 0.05; // gravity
+                particle.rotation += particle.rotationSpeed;
+                particle.life -= 1;
+                
+                // Continue animation
+                requestAnimationFrame(() => animateParticle(particle));
+            }
+            
+            // Heart button
+            document.getElementById('heart-button').addEventListener('click', function() {
+                const container = document.querySelector('.heart-container');
+                
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        createFloatingHeart(container);
+                    }, i * 100);
+                }
+            });
+            
+            function createFloatingHeart(container) {
+                const heart = document.createElement('div');
+                heart.classList.add('floating-heart');
+                heart.innerHTML = '❤️';
+                heart.style.fontSize = (20 + Math.random() * 30) + 'px';
+                heart.style.left = (Math.random() * 100) + 'vw';
+                heart.style.animationDuration = (3 + Math.random() * 4) + 's';
+                
+                container.appendChild(heart);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    heart.remove();
+                }, 8000);
+            }
+            
+            // Simulate music player
+            const musicPlayer = document.getElementById('music-player');
+            const audio = new Audio('music.mp3'); // Replace 'your-music.mp3' with the actual path to your audio file
+            
+            musicPlayer.addEventListener('click', function() {
+                this.classList.toggle('active');
+                if (this.classList.contains('active')) {
+                    this.querySelector('.music-icon').textContent = '❚❚';
+                    audio.play();
+                } else {
+                    this.querySelector('.music-icon').textContent = '♫';
+                    audio.pause();
+                }
+            });
+            
+            // Anniversary celebration
+            function celebrateAnniversary() {
+                // Create heart shower
+                setInterval(() => {
+                    createFloatingHeart(document.querySelector('.heart-container'));
+                }, 300);
+                
+                // Add special effects
+                document.body.classList.add('celebrating');
+            }
+            
+            // Slideshow functionality
+            function initSlideshow() {
+                const slides = document.querySelectorAll('.slideshow-slide');
+                const dots = document.querySelectorAll('.slideshow-dot');
+                const prevBtn = document.querySelector('.slideshow-arrow.prev');
+                const nextBtn = document.querySelector('.slideshow-arrow.next');
+                let currentSlide = 0;
+                
+                function showSlide(index) {
+                    // Hide all slides
+                    slides.forEach(slide => {
+                        slide.classList.remove('active');
+                    });
+                    
+                    // Deactivate all dots
+                    dots.forEach(dot => {
+                        dot.classList.remove('active');
+                    });
+                    
+                    // Show the selected slide
+                    slides[index].classList.add('active');
+                    dots[index].classList.add('active');
+                    currentSlide = index;
+                }
+                
+                // Add click event to dots
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        showSlide(index);
+                    });
+                });
+                
+                // Add click events to arrows
+                prevBtn.addEventListener('click', () => {
+                    let prevSlide = currentSlide - 1;
+                    if (prevSlide < 0) prevSlide = slides.length - 1;
+                    showSlide(prevSlide);
+                });
+                
+                nextBtn.addEventListener('click', () => {
+                    let nextSlide = currentSlide + 1;
+                    if (nextSlide >= slides.length) nextSlide = 0;
+                    showSlide(nextSlide);
+                });
+                
+                // Auto advance slides
+                setInterval(() => {
+                    let nextSlide = currentSlide + 1;
+                    if (nextSlide >= slides.length) nextSlide = 0;
+                    showSlide(nextSlide);
+                }, 6000);
+            }
+            
+            // Digital Love Letter Reveal
+            const envelope = document.getElementById('envelope');
+            
+            function openEnvelope() {
+                envelope.classList.add('envelope-open');
+                
+                // Immediately show all letter content
+                document.querySelectorAll('.letter-line').forEach(line => {
+                    line.classList.add('visible');
+                });
+                
+                // Create heart particles
+                createLetterHeartParticles();
+                
+                // Add more heart particles after a delay
+                setTimeout(createLetterHeartParticles, 1000);
+                setTimeout(createLetterHeartParticles, 2000);
+            }
+            
+            envelope.addEventListener('click', function() {
+                if (!this.classList.contains('envelope-open')) {
+                    openEnvelope();
+                }
+            });
+            
+            // Alternative trigger for the envelope opening (in case click doesn't work)
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelector('.message-section').addEventListener('click', function(e) {
+                    if (!envelope.classList.contains('envelope-open') && 
+                        (e.target.closest('.message-container') || e.target.closest('.section-title'))) {
+                        openEnvelope();
+                    }
+                });
+            });
+            
+            function createLetterHeartParticles() {
+                const heartContainer = document.querySelector('.flying-hearts');
+                
+                // Clear existing hearts
+                heartContainer.innerHTML = '';
+                
+                // Create new hearts
+                for (let i = 0; i < 10; i++) {
+                    const heart = document.createElement('div');
+                    heart.classList.add('heart-particle');
+                    heart.innerHTML = '❤️';
+                    
+                    // Random position
+                    heart.style.left = `${Math.random() * 100}%`;
+                    heart.style.top = `${Math.random() * 100}%`;
+                    
+                    // Random size
+                    heart.style.fontSize = `${0.5 + Math.random() * 1.5}rem`;
+                    
+                    // Random animation properties
+                    const tx = (Math.random() - 0.5) * 100; // pixels to move in x direction
+                    const ty = (Math.random() - 0.5) * 100; // pixels to move in y direction
+                    const r = Math.random() * 360; // rotation in degrees
+                    
+                    heart.style.setProperty('--tx', `${tx}px`);
+                    heart.style.setProperty('--ty', `${ty}px`);
+                    heart.style.setProperty('--r', `${r}deg`);
+                    
+                    heartContainer.appendChild(heart);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 4000);
+                }
+            }
+            
+            
+            // Initialize Word Cloud
+            function initWordCloud() {
+                // Word data with meanings/memories
+                const words = [
+                    {text: "Love", size: 70, memory: "The foundation of our relationship. From the first \"I love you\" to every day since, this feeling has only grown stronger."},
+                    {text: "Adventure", size: 50, memory: "From spontaneous road trips to planned vacations, every journey with you has been amazing."},
+                    {text: "Laughter", size: 60, memory: "Your laugh is my favorite sound. We've shared so many moments of pure joy together."},
+                    {text: "Trust", size: 45, memory: "The backbone of our relationship - knowing we can always rely on each other."},
+                    {text: "Home", size: 55, memory: "Wherever we are together feels like home. It's not about the place, but the person."},
+                    {text: "Growth", size: 40, memory: "We've grown individually and as a couple. I'm proud of how far we've come."},
+                    {text: "Memories", size: 65, memory: "Two years of beautiful moments - small and big - that I treasure in my heart."},
+                    {text: "Support", size: 45, memory: "Through challenges and triumphs, we've always been each other's biggest supporters."},
+                    {text: "Future", size: 50, memory: "I'm excited for all the plans we've made and the dreams we'll chase together."},
+                    {text: "Communication", size: 35, memory: "Our ability to talk through anything has made our bond stronger every day."},
+                    {text: "Kindness", size: 40, memory: "Your gentle heart and thoughtfulness make me fall in love with you more each day."},
+                    {text: "Patience", size: 30, memory: "Thank you for your understanding and patience during challenging times."},
+                    {text: "Chemistry", size: 45, memory: "That spark between us has never faded - it only grows stronger with time."},
+                    {text: "Respect", size: 40, memory: "The foundation of our healthy relationship - valuing each other's opinions and boundaries."},
+                    {text: "Happiness", size: 55, memory: "You've brought so much joy into my life. Every day with you is brighter."},
+                    {text: "Forever", size: 60, memory: "Two years down, forever to go. I can't wait to continue this journey with you."},
+                    {text: "Together", size: 50, memory: "Side by side, hand in hand - we're unstoppable as a team."},
+                    {text: "Dreams", size: 45, memory: "Thank you for encouraging me to chase my dreams and for sharing yours with me."},
+                    {text: "Comfort", size: 35, memory: "Being with you feels like the most natural thing in the world."},
+                    {text: "Soulmate", size: 55, memory: "I believe we were destined to find each other. You complete me in ways I never knew possible."}
+                ];
+                
+                // Configure the word cloud layout
+                const layout = d3.layout.cloud()
+                    .size([900, 500])
+                    .words(words)
+                    .padding(5)
+                    .rotate(() => Math.random() > 0.5 ? 0 : 90)
+                    .font("'Montserrat', sans-serif")
+                    .fontSize(d => d.size)
+                    .on("end", draw);
+                
+                layout.start();
+                
+                // Draw the word cloud
+                function draw(words) {
+                    const fill = d3.scaleOrdinal()
+                        .range(["#ff758f", "#ff9eb5", "#ffc3d0", "#d64161", "#ffb6c1", "#ff6b95"]);
+                    
+                    const svg = d3.select("#word-cloud").append("svg")
+                        .attr("width", layout.size()[0])
+                        .attr("height", layout.size()[1])
+                        .append("g")
+                        .attr("transform", `translate(${layout.size()[0] / 2},${layout.size()[1] / 2})`);
+                    
+                    const wordElements = svg.selectAll("text")
+                        .data(words)
+                        .enter().append("text")
+                        .attr("class", "cloud-word")
+                        .style("font-family", "'Montserrat', sans-serif")
+                        .style("font-size", d => `${d.size}px`)
+                        .style("fill", (d, i) => fill(i))
+                        .style("cursor", "pointer")
+                        .attr("text-anchor", "middle")
+                        .attr("transform", d => `translate(${d.x},${d.y})rotate(${d.rotate})`)
+                        .text(d => d.text);
+                    
+                    // Apply click handlers directly to SVG elements
+                    wordElements.each(function(d) {
+                        d3.select(this).on("click", function() {
+                            const wordDetails = document.querySelector('.word-details');
+                            const wordTitle = document.querySelector('.word-details-title');
+                            const wordText = document.querySelector('.word-details-text');
+                            
+                            // Update content
+                            wordTitle.textContent = d.text;
+                            wordText.textContent = d.memory;
+                            
+                            // Show details panel with animation
+                            wordDetails.classList.add('visible');
+                            
+                            // Add highlight effect to the clicked word
+                            d3.select(this)
+                                .transition()
+                                .duration(300)
+                                .style("font-size", `${d.size * 1.2}px`)
+                                .transition()
+                                .duration(300)
+                                .style("font-size", `${d.size}px`);
+                            
+                            // Hide after some time
+                            setTimeout(() => {
+                                wordDetails.classList.remove('visible');
+                            }, 6000);
+                        });
+                    });
+                }
+                
+                // Make word details initially visible with sample content
+                setTimeout(() => {
+                    const wordDetails = document.querySelector('.word-details');
+                    wordDetails.classList.add('visible');
+                    
+                    setTimeout(() => {
+                        wordDetails.classList.remove('visible');
+                    }, 5000);
+                }, 2000);
+            }
+            
+            // Initialize constellation
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            initStars();
+            drawStars();
+            
+            // Initialize slideshow
+            initSlideshow();
+            
+            // Initialize word cloud
+            initWordCloud();
+        });
+    </script>
+</body>
+</html>
